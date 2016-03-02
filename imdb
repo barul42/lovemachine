@@ -1,0 +1,15 @@
+#!/bin/bash
+
+film=`echo "$*" | sed 's# #+#g'`
+
+fichier="/tmp/imdb/$RANDOM$RANDOM"
+
+url1=`curl -s "http://www.imdb.com/find?q=$film&s=all" | grep -o 'findResult odd"> <td class="primary_photo"> <a href="/title/[^/]*' | head -1 | sed 's#.*/\([a-zA-Z0-9]\+\)$#\1#' | xargs -I{} echo "http://www.imdb.com/title/{}"`
+
+curl -sL "$url1" > "$fichier" ;
+
+note=`cat "$fichier" | grep "titlePageSprite star-box-giga-star" | sed 's#.* \([0-9.]\+\) .*#\1#'` ;
+
+titre=`cat $fichier | grep "<title>" | sed 's#.*<title>\(.*\) - IMDb.*#\1#'`
+
+echo -n "$titre : $note/10" | sed 's#: /#: -/#g'
